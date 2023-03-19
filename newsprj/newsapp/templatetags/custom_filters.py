@@ -2,26 +2,27 @@ from django import template
 
 register = template.Library()
 
+
+
+BAD_WORDS = ['Редиски',
+             'редиски',
+             ]
+
 # @register.filter()
-# def censor(value):
-#     bad_words = ['Редиски']
+# def censor(NEW_WORD):
 #
-#     if not isinstance(value, str):
-#         raise TypeError(f"Недопустимое значение '{type(value)}' Надо ввести строку ")
+#     for word in BAD_WORDS:
+#         if word.title() in BAD_WORDS:
+#             repl_word = word[0] + (len(word) - 1) * '*'
+#             NEW_WORD = NEW_WORD.replace(word, repl_word)
 #
-#     for word in value.split():
-#         if word.lower() in bad_words:
-#             value = value.replace(word, f"{word[0]}{'*' * (len(word)-1)}")
-#         return value
-
-
+#         return NEW_WORD
 @register.filter()
-def censor(NEW_WORD):
-    BAD_WORDS = ['Редиски']
-
-    for word in BAD_WORDS:
-        if word in BAD_WORDS:
-            repl_word = word[0] + (len(word) - 1) * '*'
-            NEW_WORD = NEW_WORD.replace(word, repl_word)
-
-        return NEW_WORD
+def censor(text: str):
+    text_list = text.split()
+    for i in range(len(text_list)):
+        for c in BAD_WORDS:
+            if text_list[i].find(c) >= 0:
+                repl_word = c[0] + (len(c) - 1) * '*'
+                text_list[i] = text_list[i].replace(c, repl_word)
+    return ' '.join(text_list)

@@ -9,6 +9,6 @@
 
 <p>{{ new.title|censor }} </p>
 <p>{{ new.text|censor }}</p>
-<p>{{ new.dateCreation }}</p>
+<p>{{ new.dateCreation|date:"d M Y"}}</p>
 {% endblock %}
 
