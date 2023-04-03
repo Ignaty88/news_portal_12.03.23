@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.shortcuts import reverse
+from datetimewidget.widgets import DateTimeWidget
 
 
 class Author (models.Model):
@@ -22,7 +23,10 @@ class Author (models.Model):
 
 
 class Category(models.Model):
-    Name = models.CharField(max_length=64, unique=True)
+    name_category = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return f'{self.name_category}'
 
 
 class Post(models.Model):
@@ -39,6 +43,7 @@ class Post(models.Model):
     title = models.CharField(max_length=128)
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
     def like(self):
@@ -56,12 +61,15 @@ class Post(models.Model):
         return '{}' .format(self.title)
 
     def get_absolute_url(self):
-        return reverse('detail', kwargs={'id': self.id})
+        return reverse('detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):
     postTrough = models.ForeignKey(Post, on_delete=models.CASCADE)
     categoryTrough = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    # def __str__(self):
+    #     return f'{self.categoryThrough} | {self.postThrough}'
 
 
 class Comment(models.Model):

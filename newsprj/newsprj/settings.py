@@ -39,7 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'newsapp',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+    'django_filters',
+    'datetimewidget',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

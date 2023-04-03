@@ -2,13 +2,36 @@
 {% load custom_filters %}
 
 {% block title %}
+Новость !
+{% endblock %}
+{% block content %}
+<table>
+
+
+<tr>
+    <td>{{ new.title|censor }}</td>
+
+    <td>{{ new.dateCreation|date:"d M Y"}}</td>
+ </tr>
+
+     </table>
+<td>{{ new.text|censor }}</td>
+
+
+<form action="{% url 'news_edit' new.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Редактировать новость</button>
+    </form>
+    <form action="{% url 'news_delete' new.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Удалить новость </button>
+    </form>
+{% endblock content %}
+
 
 <!--<td>{{ new.title|censor }}</td>-->
-<!--<td>{{ new.dateCreation }}</td>-->
+<!--<td>{{ new.dateCreation|date:"d M Y"}}</td>-->
 <!--<td>{{ new.text|truncatechars:20|censor }}</td>-->
 
-<p>{{ new.title|censor }} </p>
-<p>{{ new.text|censor }}</p>
-<p>{{ new.dateCreation|date:"d M Y"}}</p>
-{% endblock %}
+
 
