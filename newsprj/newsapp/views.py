@@ -4,6 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import *
 from .filters import NewsFilter
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 # Create your views here.
 
@@ -64,7 +65,7 @@ class SearchList(ListView):
     model = Post
     ordering = '-dateCreation'
     template_name = 'newsapp/search.html'
-    context_object_name = 'news'
+    context_object_name = 'news1'
     paginate_by = 10
 
 
@@ -86,7 +87,9 @@ class SearchList(ListView):
         context['filterset'] = self.filterset
         return context
 
-class NewsCreateView(CreateView):
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = ('newsapp.add_post',)
+    raise_exception = True
     model = Post
     fields = ['Author', 'title', 'text']
     template_name = 'newsapp/post_form.html'
@@ -96,18 +99,22 @@ class NewsCreateView(CreateView):
         form.instance.categoryType = 'NW' # присваиваем значение «новость» при создании новости
         return super().form_valid(form)
 
-class NewsUpdateView(UpdateView):
+class NewsUpdateView(PermissionRequiredMixin,UpdateView):
+    permission_required = ('newsapp.change_post',)
+    raise_exception = True
     model = Post
     fields = ['title', 'text']
     template_name = 'newsapp/post_form.html'
     success_url = reverse_lazy('news')
 
-class NewsDeleteView(DeleteView):
+class NewsDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = ('newsapp.delete_post',)
     model = Post
     template_name = 'newsapp/post_confirm_delete.html'
     success_url = reverse_lazy('news')
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = ('newsapp.add_post',)
     model = Post
     fields = ['Author', 'title', 'text', 'postCategory']
     template_name = 'newsapp/post_form.html'
@@ -117,13 +124,15 @@ class ArticleCreateView(CreateView):
         form.instance.categoryType = 'AR' # присваиваем значение «статья» при создании статьи
         return super().form_valid(form)
 
-class ArticleUpdateView(UpdateView):
+class ArticleUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = ('newsapp.change_post',)
     model = Post
     fields = ['title', 'text', 'postCategory']
     template_name = 'newsapp/post_form.html'
     success_url = reverse_lazy('news')
 
-class ArticleDeleteView(DeleteView):
+class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = ('newsapp.delete_post',)
     model = Post
     template_name = 'newsapp/post_confirm_delete.html'
     success_url = reverse_lazy('news')

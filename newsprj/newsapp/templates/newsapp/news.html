@@ -28,6 +28,9 @@
                <td>Категория</td>
                <td></td>
                 <td>Дата публикации</td>
+               {% if perms.newsapp.change_post or perms.newsapp.delete_post %}
+               <td>Действие</td>
+               {% endif %}
            </tr>
 
            <!-- Для каждого товара будете генерироваться новая строчка,
@@ -40,16 +43,24 @@
                 от переменных в Python. Здесь также можно получать доступ к
                 полям объекта модели. Например, здесь мы выводим имя,
                 в следующем столбце описание, и т.д.  -->
-               <td>{{ post.Author.authorUser }}</a></td>
+               <td>{{ post.Author.authorUser }}</td>
                <td><a href="{{ post.get_absolute_url }}">{{ post.title|censor }}</a></td>
                <td>{{ post.text|truncatechars:20|censor }}</td>
                <td>{% for category in post.postCategory.all %}
-                {{ category.name_category}}
+                {{category.name_category}}
                    {% endfor %}
                </td>
                <td></td>
                <td>{{ post.dateCreation|date:'M d Y' }}</td>
            </tr>
+                <td>
+                             {% if perms.newsapp.change_post %}
+                    <a href="{% url 'news_edit' pk=post.id %}">Изменить</a>
+                    {% endif %}
+                    {% if perms.simpleapp.delete_post %}
+                    <a href="{% url 'news_delete' post.id %}">Удалить</a>
+                    {% endif %}
+                </td>
            {% endfor %}
 
            {% if page_obj.has_previous %}
