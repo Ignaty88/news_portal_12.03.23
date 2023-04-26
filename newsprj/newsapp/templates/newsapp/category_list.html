@@ -17,9 +17,12 @@
    <h3>{{ time_now|date:'M d Y' }}</h3>
    <!-- Если в переменной next_sale будет None,
    то выведется указанный в фильтре текст -->
-
+   {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn-sm">Подписаться</a> </p>
    <hr>
-   {% if news %}
+    {% endif %}
+        <p class="text-center"><a href="{% url 'unsubscribe' category.id %}" class="btn btn-secondary btn-sm">Отписаться</a> </p>
+   {% if category_news_list %}
        <table>
            <tr>
                <td>Автор</td>
@@ -37,7 +40,7 @@
            т.е. новый HTML код, который указан в теле цикла.
            При этом сам цикл работает точно так же, как и в Python.
            product — переменная цикла, т.е. наш товар полученный из списка -->
-           {% for post in news %}
+           {% for post in category_news_list %}
            <tr>
                <!-- Не забываем, что переменные в шаблоне ничем не отличаются
                 от переменных в Python. Здесь также можно получать доступ к
@@ -46,9 +49,12 @@
                <td>{{ post.Author.authorUser }}</td>
                <td><a href="{{ post.get_absolute_url }}">{{ post.title|censor }}</a></td>
                <td>{{ post.text|truncatechars:20|censor }}</td>
-               <td>{% for category in post.postCategory.all %}
-                <a href="{% url 'category_list' category.id %}">{{category.name_category}}</a>
+               <td>{% for category in post.category.all %}
+                   <a href="{% url 'category_list' category.id">{{category}}</a>
                    {% endfor %}
+<!--               <td>{% for category in post.postCategory.all %}-->
+<!--                {{category.name_category}}-->
+<!--                   {% endfor %}-->
                </td>
                <td></td>
                <td>{{ post.dateCreation|date:'M d Y' }}</td>
@@ -82,11 +88,9 @@
            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
 
        {% endif %}
-   {% endif %}
 
        </table>
-   {% else %}
-       <h2>Новостей нет!</h2>
-   {% endif %}
 
+   {% endif %}
+{% endif %}
 {% endblock content %}

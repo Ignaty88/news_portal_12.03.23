@@ -1,10 +1,15 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404,redirect
 #from django.http import HttpResponse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from .models import *
 from .filters import NewsFilter
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.decorators import login_required
+from django.db.models import Exists, OuterRef
+from django.utils.decorators import method_decorator
+from django.contrib import messages
 
 # Create your views here.
 
@@ -136,3 +141,112 @@ class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'newsapp/post_confirm_delete.html'
     success_url = reverse_lazy('news')
+
+
+
+class CategoryListView(ListView):
+    model = Post
+    template_name = 'newsapp/category_list.html'
+    context_object_name = 'category_news_list'
+
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(postCategory=self.category).order_by('-dateCreation')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
+        # context['is_subscriber'] = self.request.user in self.category.subscribers.all()
+        context['category'] = self.category
+        return context
+
+
+
+@login_required
+def subscribe(reqest, pk):
+
+    user = reqest.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+
+    message = ' Вы успешно подписались на рассылку новостей в категории'
+    return render(reqest, 'newsapp/subscribe.html', {'category': category, 'message': message})
+
+
+@login_required
+def unsubscribe(request, pk):
+    user = request.user
+    category = get_object_or_404(Category, id=pk)
+
+    if user in category.subscribers.all():
+        category.subscribers.remove(user)
+        message = 'Вы успешно отписались от рассылки новостей в категории '
+
+        return render(request, 'newsapp/unsubscribe.html', {'category': category, 'message': message})
+
+
+
+
+# def subscriptions(request):
+#     if request.method == 'POST':
+#         category_id = request.POST.get('category_id')
+#         category = Category.objects.get(id=category_id)
+#         action = request.POST.get('action')
+#
+#         if action == 'subscribe':
+#             Subscription.objects.create(user=request.user, category=category)
+#         elif action == 'unsubscribe':
+#             Subscription.objects.filter(
+#                 user=request.user,
+#                 category=category,
+#             ).delete()
+#
+#     categories_with_subscriptions = Category.objects.annotate(
+#         user_subscribed=Exists(
+#             Subscription.objects.filter(
+#                 user=request.user,
+#                 category=OuterRef('pk'),
+#             )
+#         )
+#     ).order_by('postcategory')
+#     return render(
+#         request,
+#         'subscriptions.html',
+#         {'categories': categories_with_subscriptions},
+#     )
+
+
+
+
+
+
+
+
+
+# class SubscriptionView(View):
+#     template_name = 'newsapp/subscriptions.html'
+#
+#     @method_decorator(login_required(login_url=reverse_lazy('login')))
+#     def dispatch(self, request, *args, **kwargs):
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def get(self, request):
+#         categories = Category.objects.all()
+#         subscriptions = Subscriber.objects.filter(user=request.user)
+#         return render(request, self.template_name, {'categories': categories, 'subscriptions': subscriptions})
+#
+#     def post(self, request):
+#         selected_categories = request.POST.getlist('category')
+#         current_subscriptions = Subscriber.objects.filter(user=request.user)
+#         for sub in current_subscriptions:
+#             if sub.category.name not in selected_categories:
+#                 sub.delete()
+#         for category_name in selected_categories:
+#             category = Category.objects.get(name=category_name)
+#             try:
+#                 Subscriber.objects.get(user=request.user, category=category)
+#             except Subscriber.DoesNotExist:
+#                 Subscriber(user=request.user, category=category).save()
+#         return redirect('subscriptions')

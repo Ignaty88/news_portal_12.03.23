@@ -1,6 +1,7 @@
 from django.urls import path, include
 from .views import *
 
+
 urlpatterns = [
     path('news', PostList.as_view(), name='news'),
     path('author/', AuthorList.as_view()),
@@ -12,5 +13,8 @@ urlpatterns = [
     path('articles/create/', ArticleCreateView.as_view(), name='article_create'),
     path('articles/<int:pk>/edit/', ArticleUpdateView.as_view(), name='article_edit'),
     path('articles/<int:pk>/delete/', ArticleDeleteView.as_view(), name='article_delete'),
-    path('accounts/', include('django.contrib.auth.urls'))
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('categories/<int:pk>', CategoryListView.as_view(), name='category_list'),
+    path('subscribe/<int:pk>', subscribe, name='subscribe'),
+    path('unsubscribe/<int:pk>/', unsubscribe, name='unsubscribe'),
 ]
