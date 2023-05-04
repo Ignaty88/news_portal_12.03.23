@@ -158,13 +158,13 @@ ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignupForm"}
 
 # Настройки почты
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    # 'django.core.mail.backends.smtp.EmailBackend'
-# 'django.core.mail.backends.console.EmailBackend'
+    # 'django.core.mail.backends.smtp.EmailBackend'-для рассылки на почту
+    # 'django.core.mail.backends.console.EmailBackend'- для вывода в консоль
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = "example@yandex.ru"
 EMAIL_HOST_PASSWORD = "iliezvcovrxqizey"
-# "iliezvcovrxqizey"
+                     # "iliezvcovrxqizey"
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
@@ -175,3 +175,11 @@ SERVER_EMAIL = "example@yandex.ru"
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = "Europe/Moscow"
