@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from .models import Post, Category
+from .signals import post_save
 
 @shared_task
 def every_wk_news_mailing():
@@ -30,6 +31,7 @@ def every_wk_news_mailing():
     )
     msg.attach_alternative(html_content, 'text/html')
     msg.send()
+
 
 
 @shared_task
