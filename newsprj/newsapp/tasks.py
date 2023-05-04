@@ -31,3 +31,15 @@ def every_wk_news_mailing():
     msg.attach_alternative(html_content, 'text/html')
     msg.send()
 
+
+@shared_task
+def notify_about_new_post(sender, instance, **kwargs ):
+    if kwargs ['action'] == 'post_add':
+        categories = instance.postCategory.all()
+        subscribers:list[str] = []
+        for category in categories:
+            subscribers += category.subscribers.all()
+
+        subscribers = [s.email for s in subscribers]
+
+        post_save(instance.preview(), instance.pk, instance.title, subscribers)
