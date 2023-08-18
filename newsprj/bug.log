@@ -1,0 +1,6 @@
+INFO Watching for file changes with StatReloader
+INFO "GET /newsapp/news HTTP/1.1" 200 10368
+INFO "GET /newsapp/8 HTTP/1.1" 200 3103
+INFO "GET /newsapp/news/search/ HTTP/1.1" 200 3772
+2023-08-18 21:08:01,036 INFO Watching for file changes with StatReloader
+2023-08-18 21:08:04,306 INFO "GET /newsapp/news HTTP/1.1" 200 10368

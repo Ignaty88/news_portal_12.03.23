@@ -131,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -183,3 +183,123 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = "Europe/Moscow"
+
+# LOGGING ={
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'loggers': {
+#         'django': {
+#             'handlers': ['newsapp'],
+#             'level': 'DEBUG',
+#         }
+#     },
+#     'handlers': {
+#         'newsapp': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': 'bug.log',
+#             'formatter': 'myformatter',
+#         },
+#         'console': {
+#             'level': 'INFO',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple'
+#         },
+#     },
+#     'formatters': {
+#         'myformatter': {
+#             'format': '{asctime} {levelname} {message}',
+#             'datetime': '%Y.%m.%d %H:%M:%S',
+#             'style': '{',
+#         },
+#     },
+# }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'is_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'is_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'formatters': {
+        'console': {
+            'format': '[%(asctime)s] %(levelname)s [%(pathname)s] %(message)s',
+        },
+        'file': {
+            'format': '[%(asctime)s] %(levelname)s [%(module)s] %(message)s',
+        },
+        'errors': {
+            'format': '[%(asctime)s] %(levelname)s [%(pathname)s] %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['is_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+        'file_general': {
+            'level': 'INFO',
+            'filters': ['is_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'file',
+        },
+        'file_errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'errors',
+        },
+        'email': {
+            'level': 'ERROR',
+            'filters': ['is_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'file',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file_general'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file_errors', 'email'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console', 'file_errors', 'email'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': ['console', 'file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console', 'file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['security'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
